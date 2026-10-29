@@ -410,6 +410,9 @@ sctp_init_ifns_for_vrf(int vrfid)
 static void
 sctp_init_ifns_for_vrf(int vrfid)
 {
+#if defined(__SWITCH__)
+    (void)vrfid;
+#else
 #if defined(INET) || defined(INET6)
 	int rc;
 	struct ifaddrs *ifa, *ifas;
@@ -469,6 +472,7 @@ sctp_init_ifns_for_vrf(int vrfid)
 	}
 	freeifaddrs(ifas);
 #endif
+#endif /* __SWITCH__ */
 }
 #endif
 #if defined(__APPLE__) && !defined(__Userspace__)

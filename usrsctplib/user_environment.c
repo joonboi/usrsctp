@@ -379,6 +379,26 @@ finish_random(void)
 {
 	return;
 }
+#elif defined(__SWITCH__)
+#include <switch/kernel/random.h>
+
+void
+init_random(void)
+{
+    return;
+}
+
+void
+read_random(void *buf, size_t size)
+{
+    randomGet(buf, size);
+}
+
+void
+finish_random(void)
+{
+    return;
+}
 #else
 #error "Unknown platform. Please provide platform specific RNG."
 #endif

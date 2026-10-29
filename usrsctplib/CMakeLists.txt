@@ -218,3 +218,8 @@ install(FILES usrsctp.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 configure_file("${PROJECT_SOURCE_DIR}/usrsctp.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/usrsctp.pc" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/usrsctp.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+
+# Nintendo Switch: expose BSD-compatible types in newlib.
+if(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch" OR SWITCH)
+    target_compile_definitions(usrsctp PRIVATE _DEFAULT_SOURCE=1)
+endif()

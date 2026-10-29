@@ -36,7 +36,11 @@
 #include <unistd.h>
 #include <pthread.h>
 #if !defined(__DragonFly__) && !defined(__FreeBSD__) && !defined(__NetBSD__)
+#ifdef __SWITCH__
+#include <sys/_iovec.h>
+#else
 #include <sys/uio.h>
+#endif
 #else
 #include <user_ip6_var.h>
 #endif

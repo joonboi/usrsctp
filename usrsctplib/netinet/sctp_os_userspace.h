@@ -43,6 +43,16 @@
 
 #include <errno.h>
 
+#ifdef __SWITCH__
+#ifndef UIO_MAXIOV
+#define UIO_MAXIOV 1024
+#endif
+
+#ifndef ERESTART
+#define ERESTART 85
+#endif
+#endif
+
 #if defined(_WIN32)
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -285,6 +295,12 @@ typedef char* caddr_t;
 
 #else /* !defined(Userspace_os_Windows) */
 #include <sys/socket.h>
+#ifdef __SWITCH__
+#include <arpa/inet.h>
+#ifndef CMSG_ALIGN
+#define CMSG_ALIGN(n) _ALIGN(n)
+#endif
+#endif
 
 #if defined(__EMSCRIPTEN__) && !defined(__EMSCRIPTEN_PTHREADS__)
 #error "Unsupported build configuration."
@@ -464,8 +480,31 @@ struct sx {int dummy;};
 #if !defined(_WIN32) && !defined(__native_client__)
 #include <net/if.h>
 #include <netinet/in.h>
+#ifndef __SWITCH__
 #include <netinet/in_systm.h>
+#endif
+#ifdef __SWITCH__
+/* IPv4 constants normally supplied by netinet/ip.h. */
+#ifndef IPVERSION
+#define IPVERSION 4
+#endif
+#ifndef IP_DF
+#define IP_DF 0x4000
+#endif
+struct ip {
+    unsigned char ip_hl:4, ip_v:4;
+    unsigned char ip_tos;
+    unsigned short ip_len;
+    unsigned short ip_id;
+    unsigned short ip_off;
+    unsigned char ip_ttl;
+    unsigned char ip_p;
+    unsigned short ip_sum;
+    struct in_addr ip_src, ip_dst;
+};
+#else
 #include <netinet/ip.h>
+#endif
 #endif
 #if defined(HAVE_NETINET_IP_ICMP_H)
 #include <netinet/ip_icmp.h>
@@ -478,7 +517,7 @@ struct sx {int dummy;};
 /* for getifaddrs */
 #include <sys/types.h>
 #if !defined(_WIN32)
-#if defined(INET) || defined(INET6)
+#if (defined(INET) || defined(INET6)) && !defined(__SWITCH__)
 #include <ifaddrs.h>
 #endif
 

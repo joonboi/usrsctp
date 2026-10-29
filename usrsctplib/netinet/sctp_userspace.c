@@ -98,7 +98,7 @@ sctp_userspace_set_threadname(const char *name)
 int
 sctp_userspace_get_mtu_from_ifn(uint32_t if_index)
 {
-#if defined(INET) || defined(INET6)
+#if (defined(INET) || defined(INET6)) && !defined(__SWITCH__)
 	struct ifreq ifr;
 	int fd;
 #endif
@@ -108,7 +108,7 @@ sctp_userspace_get_mtu_from_ifn(uint32_t if_index)
 		mtu = 1280;
 	} else {
 		mtu = 0;
-#if defined(INET) || defined(INET6)
+#if (defined(INET) || defined(INET6)) && !defined(__SWITCH__)
 		memset(&ifr, 0, sizeof(struct ifreq));
 		if (if_indextoname(if_index, ifr.ifr_name) != NULL) {
 			/* TODO can I use the raw socket here and not have to open a new one with each query? */
